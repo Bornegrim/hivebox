@@ -38,6 +38,7 @@ WORKDIR /app
 COPY --from=builder /install /install
 COPY ./app ./app
 COPY requirements.txt ./
+COPY .env ./
 
 USER hiveboxuser
 

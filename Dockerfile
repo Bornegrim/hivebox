@@ -26,6 +26,9 @@ RUN pip install --upgrade pip==24.0 \
 # ─────────────── Stage 2: Final ───────────────
 FROM python:3.11.9-slim
 
+ARG SENSEBOX_IDS
+ENV SENSEBOX_IDS=$SENSEBOX_IDS
+
 RUN adduser --disabled-password --gecos "" hiveboxuser
 
 ENV PATH="/install/bin:$PATH" \
@@ -38,7 +41,6 @@ WORKDIR /app
 COPY --from=builder /install /install
 COPY ./app ./app
 COPY requirements.txt ./
-COPY .env ./
 
 USER hiveboxuser
 

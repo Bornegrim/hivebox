@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       IMAGE_NAME: hivebox-api
+      SENSEBOX_IDS: ${{ vars.SENSEBOX_IDS }}
 
     steps:
       - name: ⬇️ Checkout code
@@ -41,7 +42,7 @@ jobs:
           dockerfile: Dockerfile
 
       - name: 🏗️ Build Docker image
-        run: docker build -t $IMAGE_NAME .
+        run: docker build --build-arg SENSEBOX_IDS=${{ env.SENSEBOX_IDS }} -t $IMAGE_NAME .
 
       - name: 🚀 Run and test /version endpoint
         run: |
@@ -50,17 +51,19 @@ jobs:
           curl -s http://localhost:8000/version | grep '"version":"v0.0.1"'
           docker stop test-api
 
-      # - name: 📊 SonarQube scan
-      #   uses: SonarSource/sonarqube-scan-action@v2
-      #   env:
-      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      #   with:
-      #     projectBaseDir: .
+      - name: 📊 SonarQube scan
+        uses: SonarSource/sonarqube-scan-action@v2
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
+        with:
+          projectBaseDir: .
 
-      # - name: ✅ SonarQube Quality Gate
-      #   uses: SonarSource/sonarqube-quality-gate-action@v1
-      #   env:
-      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - name: ✅ SonarQube Quality Gate
+        uses: SonarSource/sonarqube-quality-gate-action@v1
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
 
       - name: 🔍 Run Semgrep
         uses: returntocorp/semgrep-action@v1

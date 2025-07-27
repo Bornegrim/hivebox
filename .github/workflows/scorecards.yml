@@ -1,0 +1,21 @@
+name: OpenSSF Scorecard
+
+on:
+  branch_protection_rule:
+  schedule:
+    - cron: '0 12 * * 1'  # every Monday at noon UTC
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  scorecard:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      id-token: write  # Required for non-forked repos
+      security-events: write
+    steps:
+      - name: 📊 Run OpenSSF Scorecard
+        uses: ossf/scorecard-action@v2

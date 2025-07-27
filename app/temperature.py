@@ -10,6 +10,7 @@ SENSEBOX_IDS = [box_id.strip() for box_id in sensebox_ids.split(",") if box_id.s
 
 API_URL_TEMPLATE = "https://api.opensensemap.org/boxes/{}"
 
+
 def get_average_temperature():
     temperatures = []
     one_hour_ago = datetime.now(timezone.utc) - timedelta(hours=1)
@@ -28,7 +29,9 @@ def get_average_temperature():
                         timestamp_str = last_measurement.get("createdAt")
                         value_str = last_measurement.get("value")
                         if timestamp_str:
-                            timestamp = datetime.fromisoformat(timestamp_str.replace("Z", "+00:00"))
+                            timestamp = datetime.fromisoformat(
+                                timestamp_str.replace("Z", "+00:00")
+                            )
                             if timestamp >= one_hour_ago and value_str is not None:
                                 try:
                                     value = float(value_str)
@@ -52,11 +55,11 @@ def get_average_temperature():
         return {
             "average_temperature": avg,
             "count": len(temperatures),
-            "status": status
+            "status": status,
         }
     else:
         return {
             "average_temperature": None,
             "message": "No recent temperature data found.",
-            "status": "Unavailable"
+            "status": "Unavailable",
         }

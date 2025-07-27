@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 SENSEBOX_IDS = [
     "5ade1acf223bd80019a1011c",
     "5c21ff8f919bf8001adf2488",
-    "5eba5fbad46fb8001b799786"
+    "5eba5fbad46fb8001b799786",
 ]
 
 API_URL_TEMPLATE = "https://api.opensensemap.org/boxes/{}"
@@ -31,7 +31,8 @@ def get_average_temperature():
 
                         if timestamp_str:
                             timestamp = datetime.fromisoformat(
-                                timestamp_str.replace("Z", "+00:00"))
+                                timestamp_str.replace("Z", "+00:00")
+                            )
 
                             if timestamp >= one_hour_ago and value_str is not None:
                                 try:
@@ -46,4 +47,7 @@ def get_average_temperature():
         avg_temp = sum(temperatures) / len(temperatures)
         return {"average_temperature": round(avg_temp, 2), "count": len(temperatures)}
     else:
-        return {"average_temperature": None, "message": "No recent temperature data found."}
+        return {
+            "average_temperature": None,
+            "message": "No recent temperature data found.",
+        }

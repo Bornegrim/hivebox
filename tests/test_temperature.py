@@ -4,18 +4,18 @@ from app.temperature import get_average_temperature
 from datetime import datetime, timedelta, timezone
 
 # Create a valid timestamp (within 1 hour)
-recent_time = (datetime.now(timezone.utc) - timedelta(minutes=15)
-               ).isoformat().replace("+00:00", "Z")
+recent_time = (
+    (datetime.now(timezone.utc) - timedelta(minutes=15))
+    .isoformat()
+    .replace("+00:00", "Z")
+)
 
 # Mock response data from openSenseMap
 mock_box_data = {
     "sensors": [
         {
             "title": "Temperature",
-            "lastMeasurement": {
-                "createdAt": recent_time,
-                "value": "23.5"
-            }
+            "lastMeasurement": {"createdAt": recent_time, "value": "23.5"},
         }
     ]
 }

@@ -8,7 +8,6 @@ on:
 jobs:
   lint-test-build:
     runs-on: ubuntu-latest
-
     env:
       IMAGE_NAME: hivebox-api
 
@@ -16,22 +15,22 @@ jobs:
       - name: ⬇️ Checkout code
         uses: actions/checkout@v4
 
-      - name: 🐍 Set up Python 3.11
+      - name: 🐍 Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: 3.11
 
-      - name: 📦 Install Python dependencies
+      - name: 📦 Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install pytest httpx
 
-      - name: 🧪 Run unit tests
+      - name: 🧪 Run unit and integration tests
         run: |
           PYTHONPATH=. pytest
 
-      - name: 🧼 Lint Python code
+      - name: 🧼 Lint Python
         run: |
           pip install black
           black --check .
@@ -47,6 +46,31 @@ jobs:
       - name: 🚀 Run and test /version endpoint
         run: |
           docker run -d --rm -p 8000:8000 --name test-api $IMAGE_NAME
-          sleep 5  # Give the container time to start
+          sleep 5
           curl -s http://localhost:8000/version | grep '"version":"v0.0.1"'
           docker stop test-api
+
+      # - name: 📊 SonarQube scan
+      #   uses: SonarSource/sonarqube-scan-action@v2
+      #   env:
+      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      #   with:
+      #     projectBaseDir: .
+
+      # - name: ✅ SonarQube Quality Gate
+      #   uses: SonarSource/sonarqube-quality-gate-action@v1
+      #   env:
+      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: 🔍 Run Semgrep
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: "auto"
+
+      - name: 🔐 Terrascan for Kubernetes Manifests
+        uses: accurics/terrascan-action@v1
+        with:
+          iac_type: "k8s"
+          iac_version: "v1"
+          policy_type: "all"
+          only_warn: true

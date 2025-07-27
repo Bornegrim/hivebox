@@ -10,7 +10,6 @@ SENSEBOX_IDS = [
 API_URL_TEMPLATE = "https://api.opensensemap.org/boxes/{}"
 
 
-
 def get_average_temperature():
     temperatures = []
     one_hour_ago = datetime.now(timezone.utc) - timedelta(hours=1)
@@ -31,7 +30,8 @@ def get_average_temperature():
                         value_str = last_measurement.get("value")
 
                         if timestamp_str:
-                            timestamp = datetime.fromisoformat(timestamp_str.replace("Z", "+00:00"))
+                            timestamp = datetime.fromisoformat(
+                                timestamp_str.replace("Z", "+00:00"))
 
                             if timestamp >= one_hour_ago and value_str is not None:
                                 try:

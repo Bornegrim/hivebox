@@ -15,13 +15,13 @@ COPY requirements.txt .
 # Install build dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
- && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
 
 # Install dependencies into /install (we will copy this later)
 RUN pip install --upgrade pip==24.0 \
- && pip install --prefix=/install -r requirements.txt
+    && pip install --prefix=/install -r requirements.txt
 
 # ─────────────── Stage 2: Final ───────────────
 FROM python:3.11.9-slim

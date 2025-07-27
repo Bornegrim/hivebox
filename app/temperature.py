@@ -5,7 +5,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Comma-separated string from ENV
 sensebox_ids = os.getenv("SENSEBOX_IDS", "")
 SENSEBOX_IDS = [box_id.strip() for box_id in sensebox_ids.split(",") if box_id.strip()]
 
@@ -41,6 +40,23 @@ def get_average_temperature():
 
     if temperatures:
         avg = round(sum(temperatures) / len(temperatures), 2)
-        return {"average_temperature": avg, "count": len(temperatures)}
+
+        # ✅ Add status field based on average
+        if avg <= 10:
+            status = "Too Cold"
+        elif 11 <= avg <= 36:
+            status = "Good"
+        else:
+            status = "Too Hot"
+
+        return {
+            "average_temperature": avg,
+            "count": len(temperatures),
+            "status": status
+        }
     else:
-        return {"average_temperature": None, "message": "No recent temperature data found."}
+        return {
+            "average_temperature": None,
+            "message": "No recent temperature data found.",
+            "status": "Unavailable"
+        }

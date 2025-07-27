@@ -14,7 +14,7 @@ COPY requirements.txt .
 
 # Install build dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
+    build-essential=12.9 \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .

@@ -178,7 +178,7 @@ jobs:
           
           # Test the version endpoint
           echo "Testing version endpoint..."
-          curl -s http://localhost:8000/version | grep '"version":"v${{ steps.semantic_release.outputs.next_release_version }}"' || {
+          curl -s http://localhost:8000/version | grep '"version":"v${{ github.sha }}"' || {
             echo "Version test failed. Container logs:"
             docker logs test-api
             docker stop test-api

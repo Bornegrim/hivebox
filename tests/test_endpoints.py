@@ -128,3 +128,12 @@ class TestReadyzEndpoint:
         response = client.get("/readyz")
 
         assert response.status_code == 503
+
+
+class TestHealthEndpoint:
+    def test_health_endpoint(self):
+        response = client.get("/health")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data == {"status": "healthy"}

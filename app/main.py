@@ -18,6 +18,11 @@ def version():
     return get_version()
 
 
+@app.get("/health")
+def health():
+    return {"status": "healthy"}
+
+
 @app.get("/temperature")
 def temperature():
     return get_average_temperature()

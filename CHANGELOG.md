@@ -1,3 +1,10 @@
+## [0.1.1](https://github.com/Bornegrim/hivebox/compare/v0.1.0...v0.1.1) (2025-07-28)
+
+
+### Bug Fixes
+
+* update Docker image repository owner in release job ([a7d5efd](https://github.com/Bornegrim/hivebox/commit/a7d5efd6af58876097ace9a035379b1ab1b0e9c2))
+
 # [0.1.0](https://github.com/Bornegrim/hivebox/compare/v0.0.0...v0.1.0) (2025-07-28)
 
 

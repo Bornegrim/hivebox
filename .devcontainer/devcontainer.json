@@ -8,14 +8,18 @@
 	"features": {
 		"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
 		"ghcr.io/dhoeric/features/hadolint:1": {},
-		"ghcr.io/devcontainers-extra/features/black:2": {}
+		"ghcr.io/devcontainers-extra/features/black:2": {},
+		"ghcr.io/devcontainers/features/node:1": {},
+		"ghcr.io/devcontainers/features/terraform:1": {}
 	},
 	"customizations": {
 		"vscode": {
 			"extensions": [
 				"github.vscode-github-actions",
 				"exiasr.hadolint",
-				"mikoz.black-py"
+				"mikoz.black-py",
+				"SonarSource.sonarlint-vscode",
+				"Semgrep.semgrep"
 			]
 		}
 	}

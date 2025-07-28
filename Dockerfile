@@ -36,6 +36,9 @@ ENV PATH="/install/bin:$PATH" \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
+ARG APP_VERSION
+ENV APP_VERSION=${APP_VERSION}
+
 WORKDIR /app
 
 COPY --from=builder /install /install

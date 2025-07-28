@@ -2,6 +2,7 @@
 // README at: https://github.com/devcontainers/templates/tree/main/src/postgres
 {
 	"name": "Python 3 & PostgreSQL",
+	"initializeCommand": "cp ./.env ./.devcontainer/.env",
 	"dockerComposeFile": "docker-compose.yml",
 	"service": "app",
 	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
@@ -19,7 +20,8 @@
 				"exiasr.hadolint",
 				"mikoz.black-py",
 				"SonarSource.sonarlint-vscode",
-				"Semgrep.semgrep"
+				"Semgrep.semgrep",
+				"IronGeek.vscode-env"
 			]
 		}
 	}

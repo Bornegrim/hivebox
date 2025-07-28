@@ -27,9 +27,12 @@ mock_box_data = {
 
 class TestTemperatureEndpoint:
     @patch("app.temperature.SENSEBOX_IDS", ["box1", "box2", "box3"])
+    @patch("app.temperature.set_cached")
     @patch("app.temperature.get_cached")
     @patch("app.temperature.requests.get")
-    def test_temperature_endpoint_success(self, mock_get, mock_get_cached):
+    def test_temperature_endpoint_success(
+        self, mock_get, mock_get_cached, mock_set_cached
+    ):
         # Mock cache miss
         mock_get_cached.return_value = None
 

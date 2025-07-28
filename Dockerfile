@@ -1,5 +1,5 @@
 # ─────────────── Stage 1: Builder ───────────────
-FROM python:3.11.9-slim AS builder
+FROM python:3.13-slim AS builder
 
 # Set environment variables to reduce image size and improve security
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -10,26 +10,26 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
-COPY requirements.txt .
-
 # Install build dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential=12.9 \
     && rm -rf /var/lib/apt/lists/*
 
+# Copy requirements first for better layer caching
 COPY requirements.txt .
 
 # Install dependencies into /install (we will copy this later)
-RUN pip install --upgrade pip==24.0 \
+RUN pip install --upgrade pip==24.3.1 \
     && pip install --prefix=/install -r requirements.txt
 
 # ─────────────── Stage 2: Final ───────────────
-FROM python:3.11.9-slim
+FROM python:3.13-slim
 
-ARG SENSEBOX_IDS
-ENV SENSEBOX_IDS=$SENSEBOX_IDS
-
-RUN adduser --disabled-password --gecos "" hiveboxuser
+# Install curl for health check and create user
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl=7.74.0-1.3+deb11u7 \
+    && rm -rf /var/lib/apt/lists/* \
+    && adduser --disabled-password --gecos "" hiveboxuser
 
 ENV PATH="/install/bin:$PATH" \
     PYTHONPATH="/install/lib/python3.11/site-packages" \
@@ -40,7 +40,10 @@ WORKDIR /app
 
 COPY --from=builder /install /install
 COPY ./app ./app
-COPY requirements.txt ./
+
+# Add health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8000/version || exit 1
 
 USER hiveboxuser
 

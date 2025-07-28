@@ -19,6 +19,7 @@ def fetch_box_data(box_id):
     except requests.RequestException:
         return None
 
+
 def extract_temperatures(box, one_hour_ago):
     temps = []
     for sensor in box.get("sensors", []):
@@ -29,13 +30,16 @@ def extract_temperatures(box, one_hour_ago):
             value_str = last_measurement.get("value")
             if timestamp_str and value_str is not None:
                 try:
-                    timestamp = datetime.fromisoformat(timestamp_str.replace("Z", "+00:00"))
+                    timestamp = datetime.fromisoformat(
+                        timestamp_str.replace("Z", "+00:00")
+                    )
                     if timestamp >= one_hour_ago:
                         value = float(value_str)
                         temps.append(value)
                 except (ValueError, TypeError):
                     continue
     return temps
+
 
 def determine_status(avg):
     if avg is None:
@@ -46,6 +50,7 @@ def determine_status(avg):
         return "Good"
     else:
         return "Too Hot"
+
 
 def get_average_temperature():
     temperatures = []

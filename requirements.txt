@@ -1,10 +1,23 @@
-fastapi
-uvicorn
-requests
-pytest
-httpx
-python-dotenv
-prometheus-client
-semgrep
-valkey
-minio
+# Web Framework & Server
+fastapi==0.116.1
+uvicorn==0.35.0
+
+# HTTP Clients
+requests==2.32.4
+httpx==0.28.1
+
+# Testing
+pytest==8.4.1
+
+# Configuration & Environment
+python-dotenv==1.1.1
+
+# Monitoring & Metrics
+prometheus-client==0.22.1
+
+# Security Analysis
+semgrep==1.130.0
+
+# Data Storage & Cache
+valkey==6.1.0
+minio==7.2.16

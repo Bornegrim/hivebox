@@ -31,5 +31,5 @@ def test_get_average_temperature(mock_get):
 
     result = get_average_temperature()
 
-    assert result["average_temperature"] == 23.5
+    assert result["average_temperature"] == pytest.approx(23.5)
     assert result["count"] == 3  # ← expect all 3 mocked boxes to return data

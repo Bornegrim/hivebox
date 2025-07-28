@@ -119,8 +119,6 @@ jobs:
     timeout-minutes: 20
     env:
       SENSEBOX_IDS: ${{ vars.SENSEBOX_IDS }}
-    outputs:
-      next_release_version: ${{ steps.semantic_release.outputs.next_release_version }}
     steps:
       - name: ⬇️ Checkout code
         uses: actions/checkout@v4
@@ -130,15 +128,6 @@ jobs:
         with:
           node-version: "lts/*"
           cache: 'npm'
-
-      - name: 🚀 Run Semantic Release (dry run)
-        id: semantic_release
-        with:
-          dry_run: true
-          ci: true
-        uses: cycjimmy/semantic-release-action@v4
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 🏗️ Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -150,23 +139,11 @@ jobs:
           push: false
           tags: ${{ env.IMAGE_NAME }}:${{ github.sha }}
           build-args: |
-            APP_VERSION=${{ steps.semantic_release.outputs.next_release_version }}
+            APP_VERSION=${{ github.sha }}
             SENSEBOX_IDS=${{ env.SENSEBOX_IDS }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
           outputs: type=docker,dest=/tmp/image.tar
-
-      - name: 📦 Prepare artifacts
-        run: |
-          mkdir -p artifacts/${{ env.IMAGE_NAME }}
-          mv /tmp/image.tar artifacts/${{ env.IMAGE_NAME }}/${{ env.IMAGE_NAME }}.tar
-
-      - name: Temporarily save Docker image
-        uses: actions/upload-artifact@v4
-        with:
-          name: docker-artifact
-          path: artifacts/hivebox-api/hivebox-api.tar
-          retention-days: 1
 
       - name: 🧪 Run tests in Docker container
         run: |
@@ -241,21 +218,23 @@ jobs:
           node-version: "lts/*"
           cache: 'npm'
 
+      - name: 🚀 Run Semantic Release
+        id: semantic_release
+        uses: cycjimmy/semantic-release-action@v4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: 📤 Push Docker image to GitHub Container Registry
         uses: docker/build-push-action@v6
         with:
           context: .
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ needs.build-and-test-docker.outputs.next_release_version }}
+            ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ steps.semantic_release.outputs.new_release_version }}
             ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest
           build-args: |
-            APP_VERSION=${{ needs.build-and-test-docker.outputs.next_release_version }}
+            APP_VERSION=${{ steps.semantic_release.outputs.new_release_version }}
             SENSEBOX_IDS=${{ vars.SENSEBOX_IDS }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
       
-      - name: 🚀 Run Semantic Release
-        uses: cycjimmy/semantic-release-action@v4
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

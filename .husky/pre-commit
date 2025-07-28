@@ -5,4 +5,4 @@ echo "▶ Running lint-staged (black on staged files)"
 npx lint-staged || exit 1
 
 echo "▶ Running pytest"
-pytest || exit 1
+PYTHONPATH=. pytest || exit 1

@@ -21,8 +21,13 @@ mock_box_data = {
 }
 
 
+@patch("app.temperature.get_cached")
+@patch("app.temperature.set_cached")
 @patch("app.temperature.requests.get")
-def test_get_average_temperature(mock_get):
+def test_get_average_temperature(mock_get, mock_set_cached, mock_get_cached):
+    # Ensure cache is bypassed (return None for cache miss)
+    mock_get_cached.return_value = None
+
     # Mock the response for each box ID
     mock_response = Mock()
     mock_response.status_code = 200
@@ -31,5 +36,12 @@ def test_get_average_temperature(mock_get):
 
     result = get_average_temperature()
 
+    # Verify cache was checked but returned None (cache miss)
+    mock_get_cached.assert_called_once_with("temperature_avg")
+
+    # Verify the result is calculated from API calls, not cache
     assert result["average_temperature"] == pytest.approx(23.5)
     assert result["count"] == 3  # ← expect all 3 mocked boxes to return data
+
+    # Verify cache was set with the result
+    mock_set_cached.assert_called_once()

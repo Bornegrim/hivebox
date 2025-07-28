@@ -6,3 +6,5 @@ httpx
 python-dotenv
 prometheus-client
 semgrep
+valkey
+minio

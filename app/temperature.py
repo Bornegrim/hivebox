@@ -1,10 +1,14 @@
 import os
 import requests
+import json
 from datetime import datetime, timedelta, timezone
 from dotenv import load_dotenv
+from app.cache import get_cached, set_cached
+from app.metrics import TEMPERATURE_REQUESTS, TEMPERATURE_CACHE_HITS, TEMPERATURE_AVG
+
 
 load_dotenv()
-
+CACHE_KEY = "temperature_avg"
 sensebox_ids = os.getenv("SENSEBOX_IDS", "")
 SENSEBOX_IDS = [box_id.strip() for box_id in sensebox_ids.split(",") if box_id.strip()]
 
@@ -53,6 +57,12 @@ def determine_status(avg):
 
 
 def get_average_temperature():
+    TEMPERATURE_REQUESTS.inc()
+
+    cached = get_cached(CACHE_KEY)
+    if cached:
+        TEMPERATURE_CACHE_HITS.inc()
+        return json.loads(cached)
     temperatures = []
     one_hour_ago = datetime.now(timezone.utc) - timedelta(hours=1)
 
@@ -63,12 +73,15 @@ def get_average_temperature():
 
     if temperatures:
         avg = round(sum(temperatures) / len(temperatures), 2)
+        TEMPERATURE_AVG.set(avg)
         status = determine_status(avg)
-        return {
+        result = {
             "average_temperature": avg,
             "count": len(temperatures),
             "status": status,
         }
+        set_cached(CACHE_KEY, json.dumps(result))
+        return result
     else:
         return {
             "average_temperature": None,

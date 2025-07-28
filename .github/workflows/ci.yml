@@ -225,8 +225,8 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ steps.semantic_release.outputs.new_release_version }}
-            ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest
+            ghcr.io/bornegrim/${{ env.IMAGE_NAME }}:${{ steps.semantic_release.outputs.new_release_version }}
+            ghcr.io/bornegrim/${{ env.IMAGE_NAME }}:latest
           build-args: |
             APP_VERSION=${{ steps.semantic_release.outputs.new_release_version }}
             SENSEBOX_IDS=${{ vars.SENSEBOX_IDS }}

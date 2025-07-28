@@ -5,11 +5,13 @@ on:
     branches: [main]
   pull_request:
 
+env:
+  IMAGE_NAME: hivebox-api
+
 jobs:
   lint-test-build:
     runs-on: ubuntu-latest
     env:
-      IMAGE_NAME: hivebox-api
       SENSEBOX_IDS: ${{ vars.SENSEBOX_IDS }}
 
     steps:
@@ -42,9 +44,19 @@ jobs:
           dockerfile: Dockerfile
 
       - name: 🏗️ Build Docker image
-        run: docker build --build-arg SENSEBOX_IDS=${{ env.SENSEBOX_IDS }} -t $IMAGE_NAME .
+        run: | 
+          docker build --build-arg SENSEBOX_IDS=${{ env.SENSEBOX_IDS }} -t $IMAGE_NAME:$GITHUB_SHA .
+          mkdir -p artifacts/hivebox-api
+          docker save $IMAGE_NAME:$GITHUB_SHA > artifacts/hivebox-api/hivebox-api.tar
 
-      - name: 🚀 Run and test /version endpoint
+      - name: Temporarily save Docker image
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-artifact
+          path: artifacts/hivebox-api/hivebox-api.tar
+          retention-days: 1
+
+      - name: 🧪 Run tests in Docker container
         run: |
           docker run -d --rm -p 8000:8000 --name test-api $IMAGE_NAME
           sleep 5
@@ -77,3 +89,60 @@ jobs:
           iac_version: "v1"
           policy_type: "all"
           only_warn: true
+
+  release:
+    needs: lint-test-build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # to be able to publish a GitHub release
+      issues: write # to be able to comment on released issues
+      pull-requests: write # to be able to comment on released pull requests
+      id-token: write # to enable use of OIDC for npm provenance
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: ⬇️ Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 
+
+      - name: 🐳 Retrieve saved Docker image
+        uses: actions/download-artifact@v2
+        with:
+          name: docker-artifact
+          path: artifacts/hivebox-api/hivebox-api.tar
+
+      - name: 🐳 Docker load
+        working-directory: artifacts/hivebox-api
+        run: |
+          docker load < hivebox-api.tar
+
+      - name: 🔐 Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🔧 Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+
+      - name: 🚀 Run Semantic Release
+        id: semantic_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION=$(npx semantic-release --dry-run | grep -oP '(?<=Release note for version )[^ ]+')
+          echo "next_release_version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: 📤 Push Docker image to GitHub Container Registry
+        run: |
+          docker tag $IMAGE_NAME:$GITHUB_SHA ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME:${{ steps.semantic_release.outputs.next_release_version }}
+          docker push ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME:${{ steps.semantic_release.outputs.next_release_version }}
+      
+      - name: 🚀 Run semantic-release (actual release)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx semantic-release

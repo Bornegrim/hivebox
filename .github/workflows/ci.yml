@@ -146,10 +146,7 @@ jobs:
           outputs: type=docker,dest=/tmp/image.tar
 
       - name: 🧪 Run tests in Docker container
-        run: |
-          # Load the image from the tar file
-          docker load -i artifacts/${{ env.IMAGE_NAME }}/${{ env.IMAGE_NAME }}.tar
-          
+        run: |          
           # Run the container
           docker run -d --rm -p 8000:8000 --name test-api ${{ env.IMAGE_NAME }}:${{ github.sha }}
           

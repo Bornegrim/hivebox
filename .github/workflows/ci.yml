@@ -131,19 +131,14 @@ jobs:
           node-version: "lts/*"
           cache: 'npm'
 
-      - name: 🚀 Run Semantic Release
+      - name: 🚀 Run Semantic Release (dry run)
         id: semantic_release
+        with:
+          dry_run: true
+          ci: true
+        uses: cycjimmy/semantic-release-action@v4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          npx semantic-release --dry-run > release_output.txt 2>&1 || true
-          VERSION=$(grep -oP '(?<=Release note for version )[^ ]+' release_output.txt || echo "")
-          if [ -z "$VERSION" ]; then
-            echo "No version found from semantic-release, using fallback"
-            VERSION="0.0.0-dev"
-          fi
-          echo "Detected version: $VERSION"
-          echo "next_release_version=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: 🏗️ Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -260,7 +255,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
       
-      - name: 🚀 Run semantic-release (actual release)
+      - name: 🚀 Run Semantic Release
+        uses: cycjimmy/semantic-release-action@v4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx semantic-release

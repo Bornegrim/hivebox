@@ -21,6 +21,7 @@ mock_box_data = {
 }
 
 
+@patch("app.temperature.SENSEBOX_IDS", ["box1", "box2", "box3"])
 @patch("app.temperature.get_cached")
 @patch("app.temperature.set_cached")
 @patch("app.temperature.requests.get")

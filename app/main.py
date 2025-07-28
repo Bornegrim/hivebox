@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI, Response, status
 from prometheus_client import CONTENT_TYPE_LATEST
 import requests
@@ -8,7 +9,8 @@ from app.metrics import get_metrics
 from app.storage import store_temperature_data
 from app.cache import check_cache
 
-app = FastAPI(title="HiveBox", version="0.0.1")
+APP_VERSION = os.getenv("APP_VERSION", "0.0.1")
+app = FastAPI(title="HiveBox", version=APP_VERSION)
 
 
 @app.get("/version")

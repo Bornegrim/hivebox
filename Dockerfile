@@ -27,7 +27,7 @@ FROM python:3.13-slim
 
 # Install curl for health check and create user
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl=7.74.0-1.3+deb11u7 \
+    curl=7.74.0-1.3+deb11u15 \
     && rm -rf /var/lib/apt/lists/* \
     && adduser --disabled-password --gecos "" hiveboxuser
 

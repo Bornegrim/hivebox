@@ -45,9 +45,27 @@ jobs:
           black --check .
 
       - name: 🐳 Lint Dockerfile
-        uses: hadolint/hadolint-action@v3.1.0
+        run: |
+          mkdir -p hadolint-reports
+          # Generate SARIF report for GitHub Security tab
+          hadolint --format sarif Dockerfile > hadolint-reports/hadolint.sarif || true
+          # Generate JSON report for SonarQube consumption
+          hadolint --format json Dockerfile > hadolint-reports/hadolint.json || true
+          # Generate Checkstyle XML format for SonarQube
+          hadolint --format checkstyle Dockerfile > hadolint-reports/hadolint-checkstyle.xml || true
+          # Still fail the step if there are errors (excluding the report generation)
+          hadolint Dockerfile
+
+      - name: 📤 Upload Hadolint reports
+        uses: actions/upload-artifact@v4
         with:
-          dockerfile: Dockerfile
+          name: hadolint-reports
+          path: hadolint-reports/
+
+      - name: 📊 Upload SARIF to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: hadolint-reports/hadolint.sarif
 
   test:
     runs-on: ubuntu-latest
@@ -77,8 +95,10 @@ jobs:
 
       - name: 🧪 Run unit and integration tests
         run: |
-          mkdir -p xunit-reports
-          PYTHONPATH=. pytest --cov=app --cov-report=xml:coverage-reports/coverage.xml --junitxml=xunit-reports/xunit-result-pytest.xml tests/
+          mkdir -p xunit-reports coverage-reports
+          PYTHONPATH=. pytest --cov=app --cov-report=xml:coverage-reports/coverage.xml --cov-report=term --junitxml=xunit-reports/xunit-result-pytest.xml tests/
+          # Fix coverage paths to be relative to workspace root
+          sed -i 's|<source>.*</source>|<source>.</source>|g' coverage-reports/coverage.xml
 
       - name: 📤 Upload test results
         uses: actions/upload-artifact@v4
@@ -89,7 +109,7 @@ jobs:
             xunit-reports/
 
   security-scan:
-    needs: [test]
+    needs: [lint, test]
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -100,6 +120,13 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: test-results
+          path: .
+
+      - name: 📥 Download Hadolint reports
+        uses: actions/download-artifact@v4
+        with:
+          name: hadolint-reports
+          path: hadolint-reports/
 
       - name: 📊 SonarQube scan
         uses: SonarSource/sonarqube-scan-action@v2

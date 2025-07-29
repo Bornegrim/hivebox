@@ -1,3 +1,10 @@
+# [0.2.0](https://github.com/Bornegrim/hivebox/compare/v0.1.2...v0.2.0) (2025-07-29)
+
+
+### Features
+
+* enhance CI pipeline with coverage reporting and update Python version ([a8f58d2](https://github.com/Bornegrim/hivebox/commit/a8f58d28197db1c7e3d2b6f3832a9475d84597a1))
+
 ## [0.1.2](https://github.com/Bornegrim/hivebox/compare/v0.1.1...v0.1.2) (2025-07-29)
 
 

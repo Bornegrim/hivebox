@@ -77,18 +77,29 @@ jobs:
 
       - name: 🧪 Run unit and integration tests
         run: |
-          PYTHONPATH=. pytest --cov=app --cov-report=xml --cov-report=term-missing
+          mkdir -p xunit-reports
+          PYTHONPATH=. pytest --cov=app --cov-report=xml:coverage-reports/coverage.xml --junitxml=xunit-reports/xunit-result-pytest.xml tests/
 
-      - name: 📊 Upload coverage reports to SonarQube
-        run: |
-          echo "Coverage report generated at coverage.xml"
+      - name: 📤 Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: |
+            coverage-reports/
+            xunit-reports/
 
   security-scan:
+    needs: [test]
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - name: ⬇️ Checkout code
         uses: actions/checkout@v4
+
+      - name: 📥 Download test results
+        uses: actions/download-artifact@v4
+        with:
+          name: test-results
 
       - name: 📊 SonarQube scan
         uses: SonarSource/sonarqube-scan-action@v2

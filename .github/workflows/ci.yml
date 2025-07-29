@@ -44,6 +44,10 @@ jobs:
         run: |
           black --check .
 
+      - name: 🗂️ Create hadolint reports directory
+        run: |
+          mkdir -p hadolint-reports
+
       - name: 🐳 Lint Dockerfile
         uses: hadolint/hadolint-action@v3.1.0
         with:

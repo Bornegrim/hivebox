@@ -1,0 +1,9 @@
+# Include runtime dependencies
+-r requirements.in
+
+# Dev dependencies
+pytest
+pytest-cov
+black
+semgrep
+pip-tools

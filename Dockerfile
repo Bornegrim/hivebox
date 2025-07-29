@@ -1,5 +1,5 @@
 # ─────────────── Stage 1: Builder ───────────────
-FROM python:3.13-slim@sha256:4c2cf9917bd1cbacc5e9b07320025bdb7cdf2df7b0ceaccb55e9dd7e30987419 AS builder
+FROM python:3.11-slim AS builder
 
 # Set environment variables to reduce image size and improve security
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -23,7 +23,7 @@ RUN pip install --upgrade pip==24.3.1 \
     && pip install --prefix=/install -r requirements.txt
 
 # ─────────────── Stage 2: Final ───────────────
-FROM python:3.13-slim@sha256:4c2cf9917bd1cbacc5e9b07320025bdb7cdf2df7b0ceaccb55e9dd7e30987419
+FROM python:3.11-slim
 
 # Install curl for health check and create non-root user for security
 RUN apt-get update && apt-get install -y --no-install-recommends \

@@ -67,6 +67,7 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: hadolint-reports/hadolint.sarif
+        if: always()
 
   test:
     runs-on: ubuntu-latest
@@ -143,11 +144,6 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
 
-      - name: 🔍 Run Semgrep
-        uses: returntocorp/semgrep-action@v1
-        with:
-          config: "auto"
-
       - name: 🔐 Terrascan for Kubernetes Manifests
         uses: accurics/terrascan-action@v1
         with:
@@ -155,6 +151,26 @@ jobs:
           iac_version: "v1"
           policy_type: "all"
           only_warn: true
+
+  semgrep:
+    needs: [lint, test]
+    name: semgrep/ci
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    container:
+      image: semgrep/semgrep
+    if: (github.actor != 'dependabot[bot]')
+    steps:
+      - uses: actions/checkout@v4
+      - run: semgrep ci --sarif > semgrep.sarif
+        env:
+          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+
+      - name: Upload SARIF file for GitHub Advanced Security Dashboard
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: semgrep.sarif
+        if: always()
 
   build-and-test-docker:
     needs: [lint, test]
@@ -224,7 +240,7 @@ jobs:
           docker stop test-api
 
   release:
-    needs: [build-and-test-docker, security-scan]
+    needs: [build-and-test-docker, security-scan, semgrep]
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:

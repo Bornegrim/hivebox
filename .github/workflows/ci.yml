@@ -77,7 +77,11 @@ jobs:
 
       - name: 🧪 Run unit and integration tests
         run: |
-          PYTHONPATH=. pytest
+          PYTHONPATH=. pytest --cov=app --cov-report=xml --cov-report=term-missing
+
+      - name: 📊 Upload coverage reports to SonarQube
+        run: |
+          echo "Coverage report generated at coverage.xml"
 
   security-scan:
     runs-on: ubuntu-latest

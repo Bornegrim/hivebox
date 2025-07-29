@@ -1,3 +1,11 @@
+## [0.5.1](https://github.com/Bornegrim/hivebox/compare/v0.5.0...v0.5.1) (2025-07-29)
+
+
+### Bug Fixes
+
+* **ci:** pin black version to 25.1.0 and add conditional for Docker image push ([354439a](https://github.com/Bornegrim/hivebox/commit/354439a58ddbc42591e14ef2c38374d75ee748a8))
+* restore black installation in CI and ensure it's listed in requirements ([07e4330](https://github.com/Bornegrim/hivebox/commit/07e43308d0de901962d52aff9590fdce1d8651ca))
+
 # [0.5.0](https://github.com/Bornegrim/hivebox/compare/v0.4.1...v0.5.0) (2025-07-29)
 
 

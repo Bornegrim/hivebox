@@ -45,16 +45,11 @@ jobs:
           black --check .
 
       - name: 🐳 Lint Dockerfile
-        run: |
-          mkdir -p hadolint-reports
-          # Generate SARIF report for GitHub Security tab
-          hadolint --format sarif Dockerfile > hadolint-reports/hadolint.sarif || true
-          # Generate JSON report for SonarQube consumption
-          hadolint --format json Dockerfile > hadolint-reports/hadolint.json || true
-          # Generate Checkstyle XML format for SonarQube
-          hadolint --format checkstyle Dockerfile > hadolint-reports/hadolint-checkstyle.xml || true
-          # Still fail the step if there are errors (excluding the report generation)
-          hadolint Dockerfile
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: Dockerfile
+          format: sarif
+          output-file: hadolint-reports/hadolint.sarif
 
       - name: 📤 Upload Hadolint reports
         uses: actions/upload-artifact@v4

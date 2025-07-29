@@ -224,7 +224,7 @@ jobs:
           docker stop test-api
 
   release:
-    needs: [build-and-test-docker]
+    needs: [build-and-test-docker, security-scan]
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:

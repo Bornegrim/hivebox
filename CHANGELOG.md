@@ -1,3 +1,10 @@
+## [0.4.1](https://github.com/Bornegrim/hivebox/compare/v0.4.0...v0.4.1) (2025-07-29)
+
+
+### Bug Fixes
+
+* update coverage source path in test results for accurate reporting ([8d08fa4](https://github.com/Bornegrim/hivebox/commit/8d08fa43ff4a36092152e26b5b48001f7a58e3f9))
+
 # [0.4.0](https://github.com/Bornegrim/hivebox/compare/v0.3.0...v0.4.0) (2025-07-29)
 
 

@@ -1,3 +1,10 @@
+# [0.3.0](https://github.com/Bornegrim/hivebox/compare/v0.2.0...v0.3.0) (2025-07-29)
+
+
+### Features
+
+* enhance CI pipeline with test result reporting and coverage directory structure ([cea7871](https://github.com/Bornegrim/hivebox/commit/cea7871c0a444d96f8d14ccffd086e082939204f))
+
 # [0.2.0](https://github.com/Bornegrim/hivebox/compare/v0.1.2...v0.2.0) (2025-07-29)
 
 

@@ -1,3 +1,10 @@
+## [0.1.2](https://github.com/Bornegrim/hivebox/compare/v0.1.1...v0.1.2) (2025-07-29)
+
+
+### Bug Fixes
+
+* add missing permission for publishing Docker images ([6c1b3af](https://github.com/Bornegrim/hivebox/commit/6c1b3aff5785dba4e5f2565ff73b8150b07c2a57))
+
 ## [0.1.1](https://github.com/Bornegrim/hivebox/compare/v0.1.0...v0.1.1) (2025-07-28)
 
 

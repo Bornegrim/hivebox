@@ -1,3 +1,33 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hivebox"
+version = "0.0.1"
+description = "HiveBox - Temperature monitoring and metrics API"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.116.0",
+    "uvicorn>=0.35.0",
+    "requests>=2.32.0",
+    "httpx>=0.28.0", 
+    "python-dotenv>=1.1.0",
+    "prometheus-client>=0.22.0",
+    "valkey>=6.1.0", 
+    "minio>=7.2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==8.4.1",
+    "pytest-cov==6.2.1",
+    "black==25.1.0",
+    "semgrep==1.130.0",
+    "pip-tools",
+]
+
 [tool.black]
 line-length = 88
 target-version = ["py313"]
@@ -30,3 +60,7 @@ exclude_lines = [
     "class .*\\bProtocol\\):",
     "@(abc\\.)?abstractmethod",
 ]
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+exclude = ["tests*", "terraform*"]

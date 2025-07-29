@@ -146,7 +146,7 @@ jobs:
           path: hadolint-reports/
 
       - name: 📊 SonarQube scan
-        uses: SonarSource/sonarqube-scan-action@aecaf43ae57e412bd97d70ef9ce6076e672fe0a9 # v2.3.0
+        uses: SonarSource/sonarqube-scan-action@8c71dc039c2dd71d3821e89a2b58ecc7fee6ced9 # v5.3.0
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
@@ -154,13 +154,13 @@ jobs:
           projectBaseDir: .
 
       - name: ✅ SonarQube Quality Gate
-        uses: SonarSource/sonarqube-quality-gate-action@d304d050d930b02a896b0f85935344f023928496 # v1.1.0
+        uses: SonarSource/sonarqube-quality-gate-action@cf038b0e0cdecfa9e56c198bbb7d21d751d62c3b # v1.2.0
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
 
       - name: 🔐 Terrascan for Kubernetes Manifests
-        uses: accurics/terrascan-action@3a6e87da8e244513bd77b631e624552643f794c6 # v1.4.1
+        uses: accurics/terrascan-action@dd7e921056c6f25b25bff3cf791e063ed7fc3a78 # v1.5.0
         with:
           iac_type: "k8s"
           iac_version: "v1"

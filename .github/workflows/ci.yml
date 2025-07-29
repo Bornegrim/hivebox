@@ -157,6 +157,8 @@ jobs:
     name: semgrep/ci
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    permissions:
+      security-events: write # Required for uploading SARIF files to GitHub Security tab
     container:
       image: semgrep/semgrep
     if: (github.actor != 'dependabot[bot]')

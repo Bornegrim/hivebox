@@ -22,3 +22,6 @@ semgrep==1.130.0
 # Data Storage & Cache
 valkey==6.1.0
 minio==7.2.16
+
+# Linters & Formatters
+black==25.1.0

@@ -99,7 +99,7 @@ jobs:
           mkdir -p xunit-reports coverage-reports
           PYTHONPATH=. pytest --cov=app --cov-report=xml:coverage-reports/coverage.xml --cov-report=term --junitxml=xunit-reports/xunit-result-pytest.xml tests/
           # Fix coverage paths to be relative to workspace root
-          sed -i 's|<source>.*</source>|<source>.</source>|g' coverage-reports/coverage.xml
+          sed -i 's|<source>.*</source>|<source>./app</source>|g' coverage-reports/coverage.xml
 
       - name: 📤 Upload test results
         uses: actions/upload-artifact@v4

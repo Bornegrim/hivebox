@@ -1,0 +1,11 @@
+{
+    "python.testing.pytestArgs": [
+        "tests"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "sonarlint.connectedMode.project": {
+        "connectionId": "mine",
+        "projectKey": "Bornegrim_hivebox_81ccdc86-1a3a-42ca-a6be-8702c4173304"
+    }
+}

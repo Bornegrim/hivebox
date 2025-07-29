@@ -17,6 +17,8 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    permissions:
+      security-events: write # Required for uploading SARIF files to GitHub Security tab
     steps:
       - name: Harden the runner (Audit all outbound calls)
         uses: step-security/harden-runner@ec9f2d5744a09debf3a187a3f4f675c53b671911 # v2.13.0
@@ -49,10 +51,28 @@ jobs:
         run: |
           black --check .
 
+      - name: 🗂️ Create hadolint reports directory
+        run: |
+          mkdir -p hadolint-reports
+
       - name: 🐳 Lint Dockerfile
         uses: hadolint/hadolint-action@54c9adbab1582c2ef04b2016b760714a4bfde3cf # v3.1.0
         with:
           dockerfile: Dockerfile
+          format: sarif
+          output-file: hadolint-reports/hadolint.sarif
+
+      - name: 📤 Upload Hadolint reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: hadolint-reports
+          path: hadolint-reports/
+
+      - name: 📊 Upload SARIF to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: hadolint-reports/hadolint.sarif
+        if: always()
 
   test:
     runs-on: ubuntu-latest
@@ -87,9 +107,21 @@ jobs:
 
       - name: 🧪 Run unit and integration tests
         run: |
-          PYTHONPATH=. pytest
+          mkdir -p xunit-reports coverage-reports
+          PYTHONPATH=. pytest --cov=app --cov-report=xml:coverage-reports/coverage.xml --cov-report=term --junitxml=xunit-reports/xunit-result-pytest.xml tests/
+          # Fix coverage paths to be relative to workspace root
+          sed -i 's|<source>.*</source>|<source>./app</source>|g' coverage-reports/coverage.xml
+
+      - name: 📤 Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: |
+            coverage-reports/
+            xunit-reports/
 
   security-scan:
+    needs: [lint, test]
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -100,6 +132,18 @@ jobs:
 
       - name: ⬇️ Checkout code
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: 📥 Download test results
+        uses: actions/download-artifact@v4
+        with:
+          name: test-results
+          path: .
+
+      - name: 📥 Download Hadolint reports
+        uses: actions/download-artifact@v4
+        with:
+          name: hadolint-reports
+          path: hadolint-reports/
 
       - name: 📊 SonarQube scan
         uses: SonarSource/sonarqube-scan-action@aecaf43ae57e412bd97d70ef9ce6076e672fe0a9 # v2.3.0
@@ -115,11 +159,6 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
 
-      - name: 🔍 Run Semgrep
-        uses: returntocorp/semgrep-action@713efdd345f3035192eaa63f56867b88e63e4e5d # v1
-        with:
-          config: "auto"
-
       - name: 🔐 Terrascan for Kubernetes Manifests
         uses: accurics/terrascan-action@3a6e87da8e244513bd77b631e624552643f794c6 # v1.4.1
         with:
@@ -128,14 +167,38 @@ jobs:
           policy_type: "all"
           only_warn: true
 
+  semgrep:
+    needs: [lint, test]
+    name: semgrep/ci
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      security-events: write # Required for uploading SARIF files to GitHub Security tab
+    container:
+      image: semgrep/semgrep
+    if: (github.actor != 'dependabot[bot]')
+    steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@ec9f2d5744a09debf3a187a3f4f675c53b671911 # v2.13.0
+        with:
+          egress-policy: audit
+      - uses: actions/checkout@v4
+      - run: semgrep ci --sarif > semgrep.sarif
+        env:
+          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+
+      - name: Upload SARIF file for GitHub Advanced Security Dashboard
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: semgrep.sarif
+        if: always()
+
   build-and-test-docker:
     needs: [lint, test]
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
       SENSEBOX_IDS: ${{ vars.SENSEBOX_IDS }}
-    outputs:
-      next_release_version: ${{ steps.semantic_release.outputs.next_release_version }}
     steps:
       - name: Harden the runner (Audit all outbound calls)
         uses: step-security/harden-runner@ec9f2d5744a09debf3a187a3f4f675c53b671911 # v2.13.0
@@ -151,20 +214,6 @@ jobs:
           node-version: "lts/*"
           cache: 'npm'
 
-      - name: 🚀 Run Semantic Release
-        id: semantic_release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          npx semantic-release --dry-run > release_output.txt 2>&1 || true
-          VERSION=$(grep -oP '(?<=Release note for version )[^ ]+' release_output.txt || echo "")
-          if [ -z "$VERSION" ]; then
-            echo "No version found from semantic-release, using fallback"
-            VERSION="0.0.0-dev"
-          fi
-          echo "Detected version: $VERSION"
-          echo "next_release_version=$VERSION" >> "$GITHUB_OUTPUT"
-
       - name: 🏗️ Set up Docker Buildx
         uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 # v3.11.1
 
@@ -175,7 +224,7 @@ jobs:
           push: false
           tags: ${{ env.IMAGE_NAME }}:${{ github.sha }}
           build-args: |
-            APP_VERSION=${{ steps.semantic_release.outputs.next_release_version }}
+            APP_VERSION=${{ github.sha }}
             SENSEBOX_IDS=${{ env.SENSEBOX_IDS }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
@@ -185,13 +234,6 @@ jobs:
         run: |
           mkdir -p artifacts/${{ env.IMAGE_NAME }}
           mv /tmp/image.tar artifacts/${{ env.IMAGE_NAME }}/${{ env.IMAGE_NAME }}.tar
-
-      - name: Temporarily save Docker image
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
-        with:
-          name: docker-artifact
-          path: artifacts/hivebox-api/hivebox-api.tar
-          retention-days: 1
 
       - name: 🧪 Run tests in Docker container
         run: |
@@ -214,7 +256,7 @@ jobs:
           
           # Test the version endpoint
           echo "Testing version endpoint..."
-          curl -s http://localhost:8000/version | grep '"version":"v${{ steps.semantic_release.outputs.next_release_version }}"' || {
+          curl -s http://localhost:8000/version | grep '"version":"v${{ github.sha }}"' || {
             echo "Version test failed. Container logs:"
             docker logs test-api
             docker stop test-api
@@ -224,10 +266,11 @@ jobs:
           docker stop test-api
 
   release:
-    needs: [build-and-test-docker, security-scan]
+    needs: [build-and-test-docker, security-scan, semgrep]
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
+      packages: write # to be able to publish a Docker image
       contents: write # to be able to publish a GitHub release
       issues: write # to be able to comment on released issues
       pull-requests: write # to be able to comment on released pull requests
@@ -248,18 +291,9 @@ jobs:
       - name: 🏗️ Set up Docker Buildx
         uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 # v3.11.1
 
-      - name: 🐳 Retrieve saved Docker image
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
-        with:
-          name: docker-artifact
-          path: artifacts/
-
-      - name: 🐳 Docker load
-        run: |
-          docker load < artifacts/hivebox-api/hivebox-api.tar
-
-      - name: 🔐 Log in to the Container registry
+      - name:  Log in to the Container registry
         uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3.4.0
+
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -271,21 +305,23 @@ jobs:
           node-version: "lts/*"
           cache: 'npm'
 
+      - name: 🚀 Run Semantic Release
+        id: semantic_release
+        uses: cycjimmy/semantic-release-action@v4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: 📤 Push Docker image to GitHub Container Registry
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
         with:
           context: .
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ needs.build-and-test-docker.outputs.next_release_version }}
-            ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest
+            ghcr.io/bornegrim/${{ env.IMAGE_NAME }}:${{ steps.semantic_release.outputs.new_release_version }}
+            ghcr.io/bornegrim/${{ env.IMAGE_NAME }}:latest
           build-args: |
-            APP_VERSION=${{ needs.build-and-test-docker.outputs.next_release_version }}
+            APP_VERSION=${{ steps.semantic_release.outputs.new_release_version }}
             SENSEBOX_IDS=${{ vars.SENSEBOX_IDS }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
       
-      - name: 🚀 Run semantic-release (actual release)
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx semantic-release

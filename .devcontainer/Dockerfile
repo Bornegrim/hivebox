@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/devcontainers/python:1-3.11-bullseye@sha256:ae5708357f39cf7fd7d8b8ac856dffa3525fbabd008e30e7562749b2cef619d5
+FROM mcr.microsoft.com/devcontainers/python:3.13-bullseye@sha256:cb1447535ccca8cfcf880421f956145aee085234e281e52a0ee2b554af643c77
 
 ENV PYTHONUNBUFFERED 1
 

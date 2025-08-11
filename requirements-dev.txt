@@ -41,10 +41,6 @@ argon2-cffi-bindings==21.2.0 \
     --hash=sha256:f1152ac548bd5b8bcecfb0b0371f082037e47128653df2e8ba6e914d384f3c3e \
     --hash=sha256:f9f8b450ed0547e3d473fdc8612083fd08dd2120d6ac8f73828df9b7d45bb351
     # via argon2-cffi
-async-timeout==5.0.1 \
-    --hash=sha256:39e3809566ff85354557ec2398b55e096c8364bacac9405a7a1fa429e77fe76c \
-    --hash=sha256:d9321a7a3d5a6a5e187e824d2fa0793ce379a202935782d555d6e9d2735677d3
-    # via valkey
 attrs==25.3.0 \
     --hash=sha256:427318ce031701fea540783410126f03899a97ffc6f61596ad581ac2e40e3bc3 \
     --hash=sha256:75d7cefc7fb576747b2c81b4442d4d4a1ce0900973527c011d1030fd3bf4af1b
@@ -369,9 +365,7 @@ coverage[toml]==7.10.1 \
     --hash=sha256:fa2a258aa6bf188eb9a8948f7102a83da7c430a0dce918dbd8b60ef8fcb772d7 \
     --hash=sha256:fc0e46d86905ddd16b85991f1f4919028092b4e511689bbdaff0876bd8aab3dd \
     --hash=sha256:fefe31d61d02a8b2c419700b1fade9784a43d726de26495f243b663cd9fe1513
-    # via
-    #   coverage
-    #   pytest-cov
+    # via pytest-cov
 defusedxml==0.7.1 \
     --hash=sha256:1bb3032db185915b62d7c6209c5a8792be6a32ab2fedacc84e01b52c51aa3e69 \
     --hash=sha256:a352e7e428770286cc899e2542b6cdaedb2b4953ff269a210103ec58f6198a61
@@ -993,9 +987,9 @@ uvicorn==0.35.0 \
     --hash=sha256:197535216b25ff9b785e29a0b79199f55222193d47f820816e7da751e9bc8d4a \
     --hash=sha256:bc662f087f7cf2ce11a1d7fd70b90c9f98ef2e2831556dd078d131b96cc94a01
     # via -r requirements.in
-valkey==6.1.0 \
-    --hash=sha256:a652df15ed89c41935ffae6dfd09c56f4a9ab80b592e5ed9204d538e2ddad6d3 \
-    --hash=sha256:cfe769edae894f74ac946eff1e93f7d7f466032c3030ba7e9d089a742459ac9c
+valkey==6.1.1 \
+    --hash=sha256:5880792990c6c2b5eb604a5ed5f98f300880b6dd92d123819b66ed54bb259731 \
+    --hash=sha256:e2691541c6e1503b53c714ad9a35551ac9b7c0bbac93865f063dbc859a46de92
     # via -r requirements.in
 wcmatch==8.5.2 \
     --hash=sha256:17d3ad3758f9d0b5b4dedc770b65420d4dac62e680229c287bf24c9db856a478 \

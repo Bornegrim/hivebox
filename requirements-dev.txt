@@ -369,9 +369,7 @@ coverage[toml]==7.10.1 \
     --hash=sha256:fa2a258aa6bf188eb9a8948f7102a83da7c430a0dce918dbd8b60ef8fcb772d7 \
     --hash=sha256:fc0e46d86905ddd16b85991f1f4919028092b4e511689bbdaff0876bd8aab3dd \
     --hash=sha256:fefe31d61d02a8b2c419700b1fade9784a43d726de26495f243b663cd9fe1513
-    # via
-    #   coverage
-    #   pytest-cov
+    # via pytest-cov
 defusedxml==0.7.1 \
     --hash=sha256:1bb3032db185915b62d7c6209c5a8792be6a32ab2fedacc84e01b52c51aa3e69 \
     --hash=sha256:a352e7e428770286cc899e2542b6cdaedb2b4953ff269a210103ec58f6198a61
@@ -390,9 +388,9 @@ face==24.0.0 \
     --hash=sha256:0e2c17b426fa4639a4e77d1de9580f74a98f4869ba4c7c8c175b810611622cd3 \
     --hash=sha256:611e29a01ac5970f0077f9c577e746d48c082588b411b33a0dd55c4d872949f6
     # via glom
-fastapi==0.116.1 \
-    --hash=sha256:c46ac7c312df840f0c9e220f7964bada936781bc4e2e6eb71f1c4d7553786565 \
-    --hash=sha256:ed52cbf946abfd70c5a0dccb24673f0670deeb517a88b3544d03c2a6bf283143
+fastapi==0.117.1 \
+    --hash=sha256:33c51a0d21cab2b9722d4e56dbb9316f3687155be6b276191790d8da03507552 \
+    --hash=sha256:fb2d42082d22b185f904ca0ecad2e195b851030bd6c5e4c032d1c981240c631a
     # via -r requirements.in
 glom==22.1.0 \
     --hash=sha256:1510c6587a8f9c64a246641b70033cbc5ebde99f02ad245693678038e821aeb5 \
@@ -989,9 +987,9 @@ urllib3==2.5.0 \
     #   minio
     #   requests
     #   semgrep
-uvicorn==0.35.0 \
-    --hash=sha256:197535216b25ff9b785e29a0b79199f55222193d47f820816e7da751e9bc8d4a \
-    --hash=sha256:bc662f087f7cf2ce11a1d7fd70b90c9f98ef2e2831556dd078d131b96cc94a01
+uvicorn==0.36.0 \
+    --hash=sha256:527dc68d77819919d90a6b267be55f0e76704dca829d34aea9480be831a9b9d9 \
+    --hash=sha256:6bb4ba67f16024883af8adf13aba3a9919e415358604ce46780d3f9bdc36d731
     # via -r requirements.in
 valkey==6.1.0 \
     --hash=sha256:a652df15ed89c41935ffae6dfd09c56f4a9ab80b592e5ed9204d538e2ddad6d3 \

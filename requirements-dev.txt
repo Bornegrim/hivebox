@@ -369,9 +369,7 @@ coverage[toml]==7.10.1 \
     --hash=sha256:fa2a258aa6bf188eb9a8948f7102a83da7c430a0dce918dbd8b60ef8fcb772d7 \
     --hash=sha256:fc0e46d86905ddd16b85991f1f4919028092b4e511689bbdaff0876bd8aab3dd \
     --hash=sha256:fefe31d61d02a8b2c419700b1fade9784a43d726de26495f243b663cd9fe1513
-    # via
-    #   coverage
-    #   pytest-cov
+    # via pytest-cov
 defusedxml==0.7.1 \
     --hash=sha256:1bb3032db185915b62d7c6209c5a8792be6a32ab2fedacc84e01b52c51aa3e69 \
     --hash=sha256:a352e7e428770286cc899e2542b6cdaedb2b4953ff269a210103ec58f6198a61
@@ -447,9 +445,9 @@ mdurl==0.1.2 \
     --hash=sha256:84008a41e51615a49fc9966191ff91509e3c40b939176e643fd50a5c2196b8f8 \
     --hash=sha256:bb413d29f5eea38f31dd4754dd7377d4465116fb207585f97bf925588687c1ba
     # via markdown-it-py
-minio==7.2.16 \
-    --hash=sha256:81e365c8494d591d8204a63ee7596bfdf8a7d06ad1b1507d6b9c1664a95f299a \
-    --hash=sha256:9288ab988ca57c181eb59a4c96187b293131418e28c164392186c2b89026b223
+minio==7.2.17 \
+    --hash=sha256:075fbc14b8a57140b300fefd92d94554a2e850e2f3582e17752d6fdd9553edbc \
+    --hash=sha256:4a5c887a4b0891b1ebd88584372732a1913ce81171d640ea7bbad0d0c4583e6d
     # via -r requirements.in
 mypy-extensions==1.1.0 \
     --hash=sha256:1be4cccdb0f2482337c4743e60421de3a356cd97508abadd57d47403e94f5505 \
